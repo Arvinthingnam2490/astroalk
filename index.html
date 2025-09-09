@@ -1,111 +1,101 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Compatibility Check</title>
+  <meta charset="UTF-8">
+  <title>Relationship Checker</title>
   <style>
-    body{font-family:Inter,system-ui,Segoe UI,Arial;margin:0;background:#f6f7fb;color:#111}
-    .wrap{max-width:760px;margin:36px auto;padding:20px;background:white;border-radius:10px;box-shadow:0 6px 20px rgba(16,24,40,.08)}
-    h1{margin:0 0 8px;font-size:20px}
-    label{display:block;margin-top:12px;font-size:13px;color:#555}
-    input[type="text"], input[type="date"]{width:100%;padding:10px;border-radius:8px;border:1px solid #dde3f0;margin-top:6px}
-    .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-    button{margin-top:16px;padding:10px 14px;border-radius:10px;border:0;background:#0f172a;color:#fff;cursor:pointer}
-    .muted{color:#667085;font-size:13px;margin-top:6px}
-    .result{margin-top:18px;padding:14px;border-radius:8px;background:#fbfcff;border:1px solid #e6eefb}
-    .special{border-color:#dbeffe;background:linear-gradient(180deg,#ffffff,#f3fbff)}
+    body {
+      font-family: Arial, sans-serif;
+      background: #ffe6f0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+    h1 {
+      color: #cc0066;
+    }
+    .box {
+      background: white;
+      padding: 20px;
+      margin: 10px;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    input, button {
+      padding: 8px;
+      margin: 6px 0;
+      width: 100%;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+    button {
+      background: #cc0066;
+      color: white;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    button:hover {
+      background: #99004d;
+    }
+    .result {
+      margin-top: 20px;
+      padding: 15px;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      max-width: 400px;
+      text-align: center;
+    }
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <h1>Couple Compatibility Check</h1>
-    <p class="muted">Enter details for two people. If the DOB pair is the secret combo, you'll see the special message.</p>
+  <h1>Relationship Checker</h1>
 
-    <form id="frm">
-      <div class="row">
-        <div>
-          <label>Person A — Full name</label>
-          <input id="nameA" type="text" placeholder="e.g. Alex Kumar" required>
-          <label>Person A — Place of birth</label>
-          <input id="pobA" type="text" placeholder="e.g. Mumbai" required>
-          <label>Person A — Date of birth</label>
-          <input id="dobA" type="date" required>
-        </div>
-
-        <div>
-          <label>Person B — Full name</label>
-          <input id="nameB" type="text" placeholder="e.g. Priya Singh" required>
-          <label>Person B — Place of birth</label>
-          <input id="pobB" type="text" placeholder="e.g. Delhi" required>
-          <label>Person B — Date of birth</label>
-          <input id="dobB" type="date" required>
-        </div>
-      </div>
-
-      <div style="display:flex;gap:10px">
-        <button type="submit">Check Match</button>
-        <button id="resetBtn" type="button" style="background:#fff;color:#0f172a;border:1px solid #e2e8f0">Reset</button>
-      </div>
-    </form>
-
-    <div id="out" class="result" style="display:none"></div>
+  <div class="box">
+    <h3>Person 1</h3>
+    <input type="text" id="name1" placeholder="Name">
+    <input type="date" id="dob1">
+    <input type="text" id="place1" placeholder="Place of Birth">
   </div>
 
+  <div class="box">
+    <h3>Person 2</h3>
+    <input type="text" id="name2" placeholder="Name">
+    <input type="date" id="dob2">
+    <input type="text" id="place2" placeholder="Place of Birth">
+  </div>
+
+  <button onclick="checkMatch()">Check Compatibility</button>
+
+  <div id="result" class="result" style="display:none;"></div>
+
   <script>
-    (function(){
-      const SPECIAL = new Set(["2002-07-11","2002-07-04"]); // secret dates
-      const form = document.getElementById('frm');
-      const out = document.getElementById('out');
-      const resetBtn = document.getElementById('resetBtn');
+    const SPECIAL_DOBS = ["2002-07-11", "2002-07-04"];
+    const RANDOM_RESULTS = [
+      "You two may face some difficulties, but understanding can solve them.",
+      "This match looks average; patience will help.",
+      "Your bond has potential, but needs effort from both sides.",
+      "This connection could be challenging; respect is the key."
+    ];
 
-      function showResult(html, special=false){
-        out.innerHTML = html;
-        out.style.display = 'block';
-        out.className = 'result' + (special ? ' special' : '');
+    function checkMatch() {
+      const dob1 = document.getElementById("dob1").value;
+      const dob2 = document.getElementById("dob2").value;
+
+      let resultText = "";
+      if (SPECIAL_DOBS.includes(dob1) && SPECIAL_DOBS.includes(dob2) && dob1 !== dob2) {
+        resultText = "💖 You two are perfect to have a relationship! Your bond is written in the stars.";
+      } else {
+        const randomMsg = RANDOM_RESULTS[Math.floor(Math.random() * RANDOM_RESULTS.length)];
+        resultText = randomMsg;
       }
 
-      form.addEventListener('submit', function(e){
-        e.preventDefault();
-        const nameA = document.getElementById('nameA').value.trim();
-        const pobA  = document.getElementById('pobA').value.trim();
-        const dobA  = document.getElementById('dobA').value;
-        const nameB = document.getElementById('nameB').value.trim();
-        const pobB  = document.getElementById('pobB').value.trim();
-        const dobB  = document.getElementById('dobB').value;
-
-        if(!nameA || !pobA || !dobA || !nameB || !pobB || !dobB){
-          showResult('<strong>Please fill all fields for both people.</strong>');
-          return;
-        }
-
-        const isSpecial = SPECIAL.has(dobA) && SPECIAL.has(dobB) && dobA !== dobB;
-        if(isSpecial){
-          const essay = `
-            <h3>✨ A Perfect Match</h3>
-            <p>When <strong>${escapeHtml(nameA)}</strong> from ${escapeHtml(pobA)} and <strong>${escapeHtml(nameB)}</strong> from ${escapeHtml(pobB)} met, something clicked. 
-            Their journeys complement each other — patience, laughter, and loyalty come naturally. 
-            Nurture this with honest conversation and small shared rituals. You two are perfect to build a lasting relationship.</p>
-          `;
-          showResult(essay, true);
-        } else {
-          const text = `
-            <h3>Thanks for sharing</h3>
-            <p>${escapeHtml(nameA)} and ${escapeHtml(nameB)}, every story is unique. Keep being kind and curious — that's where great relationships start.</p>
-          `;
-          showResult(text, false);
-        }
-      });
-
-      resetBtn.addEventListener('click', function(){
-        form.reset();
-        out.style.display = 'none';
-      });
-
-      function escapeHtml(s){
-        return String(s).replace(/[&<>"']/g, function(m){ return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[m]; });
-      }
-    })();
+      const resultBox = document.getElementById("result");
+      resultBox.innerText = resultText;
+      resultBox.style.display = "block";
+    }
   </script>
 </body>
 </html>
+
