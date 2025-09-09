@@ -1,101 +1,111 @@
-import React, { useState } from "react";
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Compatibility Check</title>
+  <style>
+    body{font-family:Inter,system-ui,Segoe UI,Arial;margin:0;background:#f6f7fb;color:#111}
+    .wrap{max-width:760px;margin:36px auto;padding:20px;background:white;border-radius:10px;box-shadow:0 6px 20px rgba(16,24,40,.08)}
+    h1{margin:0 0 8px;font-size:20px}
+    label{display:block;margin-top:12px;font-size:13px;color:#555}
+    input[type="text"], input[type="date"]{width:100%;padding:10px;border-radius:8px;border:1px solid #dde3f0;margin-top:6px}
+    .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    button{margin-top:16px;padding:10px 14px;border-radius:10px;border:0;background:#0f172a;color:#fff;cursor:pointer}
+    .muted{color:#667085;font-size:13px;margin-top:6px}
+    .result{margin-top:18px;padding:14px;border-radius:8px;background:#fbfcff;border:1px solid #e6eefb}
+    .special{border-color:#dbeffe;background:linear-gradient(180deg,#ffffff,#f3fbff)}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Couple Compatibility Check</h1>
+    <p class="muted">Enter details for two people. If the DOB pair is the secret combo, you'll see the special message.</p>
 
-const SPECIAL_DOBS = ["2002-07-11", "2002-07-04"];
-const RANDOM_RESULTS = [
-  "You two may face some difficulties, but understanding can solve them.",
-  "This match looks average; patience will help.",
-  "Your bond has potential, but needs effort from both sides.",
-  "This connection could be challenging; respect is the key."
-];
-
-export default function App() {
-  const [person1, setPerson1] = useState({ name: "", dob: "", place: "" });
-  const [person2, setPerson2] = useState({ name: "", dob: "", place: "" });
-  const [result, setResult] = useState("");
-
-  const checkMatch = () => {
-    const dobSet = [person1.dob, person2.dob];
-    const specialMatch =
-      dobSet.includes(SPECIAL_DOBS[0]) && dobSet.includes(SPECIAL_DOBS[1]);
-
-    if (specialMatch) {
-      setResult(
-        "You two are perfect to have a relationship! Your bond is written in the stars."
-      );
-    } else {
-      const randomMsg =
-        RANDOM_RESULTS[Math.floor(Math.random() * RANDOM_RESULTS.length)];
-      setResult(randomMsg);
-    }
-  };
-
-  return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-pink-100 p-4">
-      <h1 className="text-3xl font-bold mb-6">Relationship Checker</h1>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-3xl">
-        <div className="p-4 bg-white rounded-2xl shadow-md">
-          <h2 className="text-xl font-semibold mb-2">Person 1</h2>
-          <input
-            type="text"
-            placeholder="Name"
-            value={person1.name}
-            onChange={(e) => setPerson1({ ...person1, name: e.target.value })}
-            className="border p-2 w-full mb-2 rounded"
-          />
-          <input
-            type="date"
-            value={person1.dob}
-            onChange={(e) => setPerson1({ ...person1, dob: e.target.value })}
-            className="border p-2 w-full mb-2 rounded"
-          />
-          <input
-            type="text"
-            placeholder="Place of Birth"
-            value={person1.place}
-            onChange={(e) => setPerson1({ ...person1, place: e.target.value })}
-            className="border p-2 w-full mb-2 rounded"
-          />
+    <form id="frm">
+      <div class="row">
+        <div>
+          <label>Person A — Full name</label>
+          <input id="nameA" type="text" placeholder="e.g. Alex Kumar" required>
+          <label>Person A — Place of birth</label>
+          <input id="pobA" type="text" placeholder="e.g. Mumbai" required>
+          <label>Person A — Date of birth</label>
+          <input id="dobA" type="date" required>
         </div>
 
-        <div className="p-4 bg-white rounded-2xl shadow-md">
-          <h2 className="text-xl font-semibold mb-2">Person 2</h2>
-          <input
-            type="text"
-            placeholder="Name"
-            value={person2.name}
-            onChange={(e) => setPerson2({ ...person2, name: e.target.value })}
-            className="border p-2 w-full mb-2 rounded"
-          />
-          <input
-            type="date"
-            value={person2.dob}
-            onChange={(e) => setPerson2({ ...person2, dob: e.target.value })}
-            className="border p-2 w-full mb-2 rounded"
-          />
-          <input
-            type="text"
-            placeholder="Place of Birth"
-            value={person2.place}
-            onChange={(e) => setPerson2({ ...person2, place: e.target.value })}
-            className="border p-2 w-full mb-2 rounded"
-          />
+        <div>
+          <label>Person B — Full name</label>
+          <input id="nameB" type="text" placeholder="e.g. Priya Singh" required>
+          <label>Person B — Place of birth</label>
+          <input id="pobB" type="text" placeholder="e.g. Delhi" required>
+          <label>Person B — Date of birth</label>
+          <input id="dobB" type="date" required>
         </div>
       </div>
 
-      <button
-        onClick={checkMatch}
-        className="mt-6 bg-pink-500 text-white px-6 py-2 rounded-xl shadow hover:bg-pink-600"
-      >
-        Check Compatibility
-      </button>
+      <div style="display:flex;gap:10px">
+        <button type="submit">Check Match</button>
+        <button id="resetBtn" type="button" style="background:#fff;color:#0f172a;border:1px solid #e2e8f0">Reset</button>
+      </div>
+    </form>
 
-      {result && (
-        <div className="mt-6 p-4 bg-white rounded-2xl shadow-md max-w-xl text-center">
-          <p className="text-lg">{result}</p>
-        </div>
-      )}
-    </div>
-  );
-}
+    <div id="out" class="result" style="display:none"></div>
+  </div>
 
+  <script>
+    (function(){
+      const SPECIAL = new Set(["2002-07-11","2002-07-04"]); // secret dates
+      const form = document.getElementById('frm');
+      const out = document.getElementById('out');
+      const resetBtn = document.getElementById('resetBtn');
+
+      function showResult(html, special=false){
+        out.innerHTML = html;
+        out.style.display = 'block';
+        out.className = 'result' + (special ? ' special' : '');
+      }
+
+      form.addEventListener('submit', function(e){
+        e.preventDefault();
+        const nameA = document.getElementById('nameA').value.trim();
+        const pobA  = document.getElementById('pobA').value.trim();
+        const dobA  = document.getElementById('dobA').value;
+        const nameB = document.getElementById('nameB').value.trim();
+        const pobB  = document.getElementById('pobB').value.trim();
+        const dobB  = document.getElementById('dobB').value;
+
+        if(!nameA || !pobA || !dobA || !nameB || !pobB || !dobB){
+          showResult('<strong>Please fill all fields for both people.</strong>');
+          return;
+        }
+
+        const isSpecial = SPECIAL.has(dobA) && SPECIAL.has(dobB) && dobA !== dobB;
+        if(isSpecial){
+          const essay = `
+            <h3>✨ A Perfect Match</h3>
+            <p>When <strong>${escapeHtml(nameA)}</strong> from ${escapeHtml(pobA)} and <strong>${escapeHtml(nameB)}</strong> from ${escapeHtml(pobB)} met, something clicked. 
+            Their journeys complement each other — patience, laughter, and loyalty come naturally. 
+            Nurture this with honest conversation and small shared rituals. You two are perfect to build a lasting relationship.</p>
+          `;
+          showResult(essay, true);
+        } else {
+          const text = `
+            <h3>Thanks for sharing</h3>
+            <p>${escapeHtml(nameA)} and ${escapeHtml(nameB)}, every story is unique. Keep being kind and curious — that's where great relationships start.</p>
+          `;
+          showResult(text, false);
+        }
+      });
+
+      resetBtn.addEventListener('click', function(){
+        form.reset();
+        out.style.display = 'none';
+      });
+
+      function escapeHtml(s){
+        return String(s).replace(/[&<>"']/g, function(m){ return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[m]; });
+      }
+    })();
+  </script>
+</body>
+</html>
