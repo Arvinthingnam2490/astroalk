@@ -1,0 +1,203 @@
+import React, { useMemo, useState } from "react";
+
+// Special DOBs (YYYY-MM-DD). You can add more here.
+const SPECIAL_DOBS = new Set(["2002-07-11", "2002-07-04"]);
+
+export default function App() {
+  const [p1, setP1] = useState({ name: "", pob: "", dob: "" });
+  const [p2, setP2] = useState({ name: "", pob: "", dob: "" });
+  const [result, setResult] = useState(null);
+
+  const bothFilled = useMemo(() => {
+    const a = Object.values(p1).every(Boolean);
+    const b = Object.values(p2).every(Boolean);
+    return a && b;
+  }, [p1, p2]);
+
+  function handleSubmit(e) {
+    e.preventDefault();
+
+    const isSpecialCombo =
+      SPECIAL_DOBS.has(p1.dob) && SPECIAL_DOBS.has(p2.dob) && p1.dob !== p2.dob;
+
+    if (isSpecialCombo) {
+      const essay = makeEssay(p1, p2);
+      setResult({
+        type: "special",
+        title: "A Perfect Match ✨",
+        blurb:
+          "Destiny check passed! Based on your entries, you two are a wonderfully compatible pair.",
+        essay,
+      });
+    } else {
+      const fallback = makeFriendlyMessage(p1, p2);
+      setResult({
+        type: "generic",
+        title: "Thanks for sharing!",
+        blurb:
+          "We can't reveal all our secrets today, but here's a sweet note based on what you shared.",
+        essay: fallback,
+      });
+    }
+  }
+
+  function resetForm() {
+    setP1({ name: "", pob: "", dob: "" });
+    setP2({ name: "", pob: "", dob: "" });
+    setResult(null);
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 text-slate-800 p-6">
+      <div className="max-w-4xl mx-auto">
+        <header className="mb-8 text-center">
+          <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">Couple Compatibility ✨</h1>
+          <p className="mt-2 text-sm sm:text-base text-slate-600">
+            Enter names, places of birth, and dates of birth for two people. If their dates
+            match our secret combo, they'll see something special. 😉
+          </p>
+        </header>
+
+        <div className="grid md:grid-cols-2 gap-6">
+          <PersonCard
+            label="Person A"
+            values={p1}
+            onChange={setP1}
+          />
+          <PersonCard
+            label="Person B"
+            values={p2}
+            onChange={setP2}
+          />
+        </div>
+
+        <form onSubmit={handleSubmit} className="mt-6 flex items-center gap-3">
+          <button
+            type="submit"
+            className="px-5 py-2 rounded-2xl shadow-sm bg-slate-900 text-white disabled:opacity-40"
+            disabled={!bothFilled}
+            title={!bothFilled ? "Fill all fields for both people" : "Check match"}
+          >
+            Check Match
+          </button>
+          <button
+            type="button"
+            onClick={resetForm}
+            className="px-4 py-2 rounded-2xl shadow-sm bg-white border border-slate-300"
+          >
+            Reset
+          </button>
+        </form>
+
+        {result && (
+          <ResultCard result={result} onReset={resetForm} />
+        )}
+
+        <FooterHelp />
+      </div>
+    </div>
+  );
+}
+
+function PersonCard({ label, values, onChange }) {
+  return (
+    <div className="bg-white rounded-2xl shadow p-5">
+      <h2 className="text-xl font-semibold mb-4">{label}</h2>
+      <div className="space-y-4">
+        <Field
+          label="Full Name"
+          placeholder="e.g., Alex Kumar"
+          value={values.name}
+          onChange={(v) => onChange({ ...values, name: v })}
+        />
+        <Field
+          label="Place of Birth"
+          placeholder="e.g., Mumbai"
+          value={values.pob}
+          onChange={(v) => onChange({ ...values, pob: v })}
+        />
+        <DateField
+          label="Date of Birth"
+          value={values.dob}
+          onChange={(v) => onChange({ ...values, dob: v })}
+        />
+      </div>
+    </div>
+  );
+}
+
+function Field({ label, value, onChange, placeholder }) {
+  return (
+    <label className="block">
+      <span className="block text-sm text-slate-600 mb-1">{label}</span>
+      <input
+        className="w-full rounded-xl border border-slate-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-slate-400"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+      />
+    </label>
+  );
+}
+
+function DateField({ label, value, onChange }) {
+  return (
+    <label className="block">
+      <span className="block text-sm text-slate-600 mb-1">{label}</span>
+      <input
+        type="date"
+        className="w-full rounded-xl border border-slate-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-slate-400"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+      />
+    </label>
+  );
+}
+
+function ResultCard({ result, onReset }) {
+  return (
+    <div className="mt-8 bg-white rounded-2xl shadow p-6">
+      <h3 className="text-2xl font-bold mb-2">{result.title}</h3>
+      <p className="text-slate-600 mb-4">{result.blurb}</p>
+      <article className="prose max-w-none">
+        <p>{result.essay}</p>
+      </article>
+      <div className="mt-6">
+        <button
+          onClick={onReset}
+          className="px-4 py-2 rounded-2xl shadow-sm bg-slate-900 text-white"
+        >
+          Try another pair
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function FooterHelp() {
+  return (
+    <div className="mt-8 text-xs text-slate-500">
+      <details>
+        <summary className="cursor-pointer select-none">Admin: How to change the secret dates?</summary>
+        <div className="mt-2">
+          Open the code and edit the <code>SPECIAL_DOBS</code> set at the top. It expects
+          ISO dates like <code>YYYY-MM-DD</code>. The current combo is 2002-07-11 and 2002-07-04, and
+          the app requires them to be different (either order).
+        </div>
+      </details>
+    </div>
+  );
+}
+
+function makeEssay(a, b) {
+  return `When ${a.name} from ${a.pob} crossed paths with ${b.name} from ${b.pob}, something just clicked. 
+Their journeys, though different, share a rhythm that promises patience, laughter, and loyalty. 
+You balance each other’s strengths and soften each other’s edges—exactly what a lasting relationship needs. 
+Nurture this connection with small rituals, honest conversations, and shared adventures. 
+You two are perfect to have a relationship—go build something beautiful.`;
+}
+
+function makeFriendlyMessage(a, b) {
+  return `${a.name} and ${b.name}, thanks for sharing your details! Every story is unique, and yours begins in ${a.pob} and ${b.pob}. 
+Keep writing it together with kindness and curiosity.`;
+}
