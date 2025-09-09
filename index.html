@@ -13,21 +13,22 @@ export default function App() {
   const [person2, setPerson2] = useState({ name: "", dob: "", place: "" });
   const [result, setResult] = useState("");
 
-  const checkMatch = () => {
-    const dobSet = [person1.dob, person2.dob];
-    const specialMatch =
-      dobSet.includes(SPECIAL_DOBS[0]) && dobSet.includes(SPECIAL_DOBS[1]);
+ const checkMatch = () => {
+  const dobSet = [person1.dob, person2.dob];
+  const specialMatch =
+    dobSet.includes(SPECIAL_DOBS[0]) && dobSet.includes(SPECIAL_DOBS[1]);
 
-    if (specialMatch) {
-      setResult(
-        "You two are perfect to have a relationship! Your bond is written in the stars."
-      );
-    } else {
-      const randomMsg =
-        RANDOM_RESULTS[Math.floor(Math.random() * RANDOM_RESULTS.length)];
-      setResult(randomMsg);
-    }
-  };
+  if (specialMatch) {
+    setResult(
+      "You two are perfect to have a relationship! Your bond is written in the stars."
+    );
+  } else {
+    // Always pick a fresh random result
+    const randomIndex = Math.floor(Math.random() * RANDOM_RESULTS.length);
+    setResult(RANDOM_RESULTS[randomIndex]);
+  }
+};
+
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-pink-100 p-4">
