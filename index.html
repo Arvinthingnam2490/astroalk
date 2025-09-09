@@ -1,203 +1,111 @@
-import React, { useMemo, useState } from "react";
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Compatibility Check</title>
+  <style>
+    body{font-family:Inter,system-ui,Segoe UI,Arial;margin:0;background:#f6f7fb;color:#111}
+    .wrap{max-width:760px;margin:36px auto;padding:20px;background:white;border-radius:10px;box-shadow:0 6px 20px rgba(16,24,40,.08)}
+    h1{margin:0 0 8px;font-size:20px}
+    label{display:block;margin-top:12px;font-size:13px;color:#555}
+    input[type="text"], input[type="date"]{width:100%;padding:10px;border-radius:8px;border:1px solid #dde3f0;margin-top:6px}
+    .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    button{margin-top:16px;padding:10px 14px;border-radius:10px;border:0;background:#0f172a;color:#fff;cursor:pointer}
+    .muted{color:#667085;font-size:13px;margin-top:6px}
+    .result{margin-top:18px;padding:14px;border-radius:8px;background:#fbfcff;border:1px solid #e6eefb}
+    .special{border-color:#dbeffe;background:linear-gradient(180deg,#ffffff,#f3fbff)}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Couple Compatibility Check</h1>
+    <p class="muted">Enter details for two people. If the DOB pair is the secret combo, you'll see the special message.</p>
 
-// Special DOBs (YYYY-MM-DD). You can add more here.
-const SPECIAL_DOBS = new Set(["2002-07-11", "2002-07-04"]);
-
-export default function App() {
-  const [p1, setP1] = useState({ name: "", pob: "", dob: "" });
-  const [p2, setP2] = useState({ name: "", pob: "", dob: "" });
-  const [result, setResult] = useState(null);
-
-  const bothFilled = useMemo(() => {
-    const a = Object.values(p1).every(Boolean);
-    const b = Object.values(p2).every(Boolean);
-    return a && b;
-  }, [p1, p2]);
-
-  function handleSubmit(e) {
-    e.preventDefault();
-
-    const isSpecialCombo =
-      SPECIAL_DOBS.has(p1.dob) && SPECIAL_DOBS.has(p2.dob) && p1.dob !== p2.dob;
-
-    if (isSpecialCombo) {
-      const essay = makeEssay(p1, p2);
-      setResult({
-        type: "special",
-        title: "A Perfect Match ✨",
-        blurb:
-          "Destiny check passed! Based on your entries, you two are a wonderfully compatible pair.",
-        essay,
-      });
-    } else {
-      const fallback = makeFriendlyMessage(p1, p2);
-      setResult({
-        type: "generic",
-        title: "Thanks for sharing!",
-        blurb:
-          "We can't reveal all our secrets today, but here's a sweet note based on what you shared.",
-        essay: fallback,
-      });
-    }
-  }
-
-  function resetForm() {
-    setP1({ name: "", pob: "", dob: "" });
-    setP2({ name: "", pob: "", dob: "" });
-    setResult(null);
-  }
-
-  return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 text-slate-800 p-6">
-      <div className="max-w-4xl mx-auto">
-        <header className="mb-8 text-center">
-          <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">Couple Compatibility ✨</h1>
-          <p className="mt-2 text-sm sm:text-base text-slate-600">
-            Enter names, places of birth, and dates of birth for two people. If their dates
-            match our secret combo, they'll see something special. 😉
-          </p>
-        </header>
-
-        <div className="grid md:grid-cols-2 gap-6">
-          <PersonCard
-            label="Person A"
-            values={p1}
-            onChange={setP1}
-          />
-          <PersonCard
-            label="Person B"
-            values={p2}
-            onChange={setP2}
-          />
+    <form id="frm">
+      <div class="row">
+        <div>
+          <label>Person A — Full name</label>
+          <input id="nameA" type="text" placeholder="e.g. Alex Kumar" required>
+          <label>Person A — Place of birth</label>
+          <input id="pobA" type="text" placeholder="e.g. Mumbai" required>
+          <label>Person A — Date of birth</label>
+          <input id="dobA" type="date" required>
         </div>
 
-        <form onSubmit={handleSubmit} className="mt-6 flex items-center gap-3">
-          <button
-            type="submit"
-            className="px-5 py-2 rounded-2xl shadow-sm bg-slate-900 text-white disabled:opacity-40"
-            disabled={!bothFilled}
-            title={!bothFilled ? "Fill all fields for both people" : "Check match"}
-          >
-            Check Match
-          </button>
-          <button
-            type="button"
-            onClick={resetForm}
-            className="px-4 py-2 rounded-2xl shadow-sm bg-white border border-slate-300"
-          >
-            Reset
-          </button>
-        </form>
-
-        {result && (
-          <ResultCard result={result} onReset={resetForm} />
-        )}
-
-        <FooterHelp />
-      </div>
-    </div>
-  );
-}
-
-function PersonCard({ label, values, onChange }) {
-  return (
-    <div className="bg-white rounded-2xl shadow p-5">
-      <h2 className="text-xl font-semibold mb-4">{label}</h2>
-      <div className="space-y-4">
-        <Field
-          label="Full Name"
-          placeholder="e.g., Alex Kumar"
-          value={values.name}
-          onChange={(v) => onChange({ ...values, name: v })}
-        />
-        <Field
-          label="Place of Birth"
-          placeholder="e.g., Mumbai"
-          value={values.pob}
-          onChange={(v) => onChange({ ...values, pob: v })}
-        />
-        <DateField
-          label="Date of Birth"
-          value={values.dob}
-          onChange={(v) => onChange({ ...values, dob: v })}
-        />
-      </div>
-    </div>
-  );
-}
-
-function Field({ label, value, onChange, placeholder }) {
-  return (
-    <label className="block">
-      <span className="block text-sm text-slate-600 mb-1">{label}</span>
-      <input
-        className="w-full rounded-xl border border-slate-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-slate-400"
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        placeholder={placeholder}
-      />
-    </label>
-  );
-}
-
-function DateField({ label, value, onChange }) {
-  return (
-    <label className="block">
-      <span className="block text-sm text-slate-600 mb-1">{label}</span>
-      <input
-        type="date"
-        className="w-full rounded-xl border border-slate-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-slate-400"
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-      />
-    </label>
-  );
-}
-
-function ResultCard({ result, onReset }) {
-  return (
-    <div className="mt-8 bg-white rounded-2xl shadow p-6">
-      <h3 className="text-2xl font-bold mb-2">{result.title}</h3>
-      <p className="text-slate-600 mb-4">{result.blurb}</p>
-      <article className="prose max-w-none">
-        <p>{result.essay}</p>
-      </article>
-      <div className="mt-6">
-        <button
-          onClick={onReset}
-          className="px-4 py-2 rounded-2xl shadow-sm bg-slate-900 text-white"
-        >
-          Try another pair
-        </button>
-      </div>
-    </div>
-  );
-}
-
-function FooterHelp() {
-  return (
-    <div className="mt-8 text-xs text-slate-500">
-      <details>
-        <summary className="cursor-pointer select-none">Admin: How to change the secret dates?</summary>
-        <div className="mt-2">
-          Open the code and edit the <code>SPECIAL_DOBS</code> set at the top. It expects
-          ISO dates like <code>YYYY-MM-DD</code>. The current combo is 2002-07-11 and 2002-07-04, and
-          the app requires them to be different (either order).
+        <div>
+          <label>Person B — Full name</label>
+          <input id="nameB" type="text" placeholder="e.g. Priya Singh" required>
+          <label>Person B — Place of birth</label>
+          <input id="pobB" type="text" placeholder="e.g. Delhi" required>
+          <label>Person B — Date of birth</label>
+          <input id="dobB" type="date" required>
         </div>
-      </details>
-    </div>
-  );
-}
+      </div>
 
-function makeEssay(a, b) {
-  return `When ${a.name} from ${a.pob} crossed paths with ${b.name} from ${b.pob}, something just clicked. 
-Their journeys, though different, share a rhythm that promises patience, laughter, and loyalty. 
-You balance each other’s strengths and soften each other’s edges—exactly what a lasting relationship needs. 
-Nurture this connection with small rituals, honest conversations, and shared adventures. 
-You two are perfect to have a relationship—go build something beautiful.`;
-}
+      <div style="display:flex;gap:10px">
+        <button type="submit">Check Match</button>
+        <button id="resetBtn" type="button" style="background:#fff;color:#0f172a;border:1px solid #e2e8f0">Reset</button>
+      </div>
+    </form>
 
-function makeFriendlyMessage(a, b) {
-  return `${a.name} and ${b.name}, thanks for sharing your details! Every story is unique, and yours begins in ${a.pob} and ${b.pob}. 
-Keep writing it together with kindness and curiosity.`;
-}
+    <div id="out" class="result" style="display:none"></div>
+  </div>
+
+  <script>
+    (function(){
+      const SPECIAL = new Set(["2002-07-11","2002-07-04"]); // secret dates
+      const form = document.getElementById('frm');
+      const out = document.getElementById('out');
+      const resetBtn = document.getElementById('resetBtn');
+
+      function showResult(html, special=false){
+        out.innerHTML = html;
+        out.style.display = 'block';
+        out.className = 'result' + (special ? ' special' : '');
+      }
+
+      form.addEventListener('submit', function(e){
+        e.preventDefault();
+        const nameA = document.getElementById('nameA').value.trim();
+        const pobA  = document.getElementById('pobA').value.trim();
+        const dobA  = document.getElementById('dobA').value;
+        const nameB = document.getElementById('nameB').value.trim();
+        const pobB  = document.getElementById('pobB').value.trim();
+        const dobB  = document.getElementById('dobB').value;
+
+        if(!nameA || !pobA || !dobA || !nameB || !pobB || !dobB){
+          showResult('<strong>Please fill all fields for both people.</strong>');
+          return;
+        }
+
+        const isSpecial = SPECIAL.has(dobA) && SPECIAL.has(dobB) && dobA !== dobB;
+        if(isSpecial){
+          const essay = `
+            <h3>✨ A Perfect Match</h3>
+            <p>When <strong>${escapeHtml(nameA)}</strong> from ${escapeHtml(pobA)} and <strong>${escapeHtml(nameB)}</strong> from ${escapeHtml(pobB)} met, something clicked. 
+            Their journeys complement each other — patience, laughter, and loyalty come naturally. 
+            Nurture this with honest conversation and small shared rituals. You two are perfect to build a lasting relationship.</p>
+          `;
+          showResult(essay, true);
+        } else {
+          const text = `
+            <h3>Thanks for sharing</h3>
+            <p>${escapeHtml(nameA)} and ${escapeHtml(nameB)}, every story is unique. Keep being kind and curious — that's where great relationships start.</p>
+          `;
+          showResult(text, false);
+        }
+      });
+
+      resetBtn.addEventListener('click', function(){
+        form.reset();
+        out.style.display = 'none';
+      });
+
+      function escapeHtml(s){
+        return String(s).replace(/[&<>"']/g, function(m){ return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[m]; });
+      }
+    })();
+  </script>
+</body>
+</html>
